@@ -1,5 +1,5 @@
-#ifndef SRK31_SELECTIVE_ITERATOR_HPP
-#define SRK31_SELECTIVE_ITERATOR_HPP
+#ifndef SRK31_SELECTIVE_ITERATOR_HPP_
+#define SRK31_SELECTIVE_ITERATOR_HPP_
 
 #include <iterator>
 #include <iostream>

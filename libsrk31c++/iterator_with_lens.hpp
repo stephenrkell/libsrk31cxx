@@ -1,3 +1,6 @@
+#ifndef SRK31_ITERATOR_WITH_LENS_HPP_
+#define SRK31_ITERATOR_WITH_LENS_HPP_
+
 #include <iterator>
 #include <functional>
 
@@ -52,3 +55,5 @@ public:
     bool operator==(const self& arg) const { return this->m_iter == arg.m_iter; }
     bool operator!=(const self& arg) const { return this->m_iter != arg.m_iter; }
 };
+
+#endif

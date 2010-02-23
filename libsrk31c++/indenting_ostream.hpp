@@ -1,5 +1,5 @@
-#ifndef __SRK31_INDENTING_OSTREAM_HPP
-#define __SRK31_INDENTING_OSTREAM_HPP
+#ifndef SRK31_INDENTING_OSTREAM_HPP_
+#define SRK31_INDENTING_OSTREAM_HPP_
 
 #include <map>
 #include <vector>

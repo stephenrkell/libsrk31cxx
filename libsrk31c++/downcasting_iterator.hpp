@@ -1,3 +1,6 @@
+#ifndef SRK31_DOWNCASTING_ITERATOR_HPP_
+#define SRK31_DOWNCASTING_ITERATOR_HPP_
+
 #include <iterator>
 
 template<typename Iter, typename DownTo>
@@ -36,3 +39,5 @@ public:
     bool operator==(const self& arg) const { return this->m_iter == arg.m_iter; }
     bool operator!=(const self& arg) const { return this->m_iter != arg.m_iter; }
 };
+
+#endif
