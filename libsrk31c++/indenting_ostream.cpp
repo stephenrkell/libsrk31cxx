@@ -26,6 +26,28 @@ namespace srk31
     	}
 	};
 	
+	indenting_tty_ostream::indenting_tty_ostream(std::ostream& s) : 
+		std::ostream(p_wrapped_streambuf = new boost::iostreams::filtering_ostreambuf),
+		indent_level(0),
+		p_stream_filter(new newline_tabbing_filter(&indent_level))
+	{
+		p_wrapped_streambuf->push(*p_stream_filter);
+		p_wrapped_streambuf->push(s);
+	}
+	indenting_tty_ostream::~indenting_tty_ostream() { delete p_stream_filter; delete p_wrapped_streambuf; }
+	indenting_tty_ostream indenting_tty_cout(std::cout), indenting_tty_cerr(std::cerr);
+
+	indenting_newline_ostream::indenting_newline_ostream(std::ostream& s) : 
+		std::ostream(p_wrapped_streambuf = new boost::iostreams::filtering_ostreambuf),
+		indent_level(0),
+		p_stream_filter(new newline_tabbing_filter(&indent_level))
+	{
+		p_wrapped_streambuf->push(*p_stream_filter);
+		p_wrapped_streambuf->push(s);
+	}
+	indenting_newline_ostream::~indenting_newline_ostream() { delete p_stream_filter; delete p_wrapped_streambuf; }
+	indenting_newline_ostream indenting_newline_cout(std::cout), indenting_newline_cerr(std::cerr);
+
 	indenting_ostream::indenting_ostream(std::ostream& s) : 
 		std::ostream(p_wrapped_streambuf = new boost::iostreams::filtering_ostreambuf),
 		indent_level(0),
@@ -35,6 +57,7 @@ namespace srk31
 		p_wrapped_streambuf->push(s);
 	}
 	indenting_ostream::~indenting_ostream() { delete p_stream_filter; delete p_wrapped_streambuf; }
-
 	indenting_ostream indenting_cout(std::cout), indenting_cerr(std::cerr);
+
+
 }

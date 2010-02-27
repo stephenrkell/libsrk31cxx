@@ -1,3 +1,4 @@
+CXXFLAGS += -I ../c++-fileno/include -L../c++-fileno
 OBJS := $(patsubst %.cpp,%.o,$(wildcard *.cpp))
 HDRS := $(wildcard *.hpp)
 

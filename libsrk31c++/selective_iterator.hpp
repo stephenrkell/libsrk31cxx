@@ -33,6 +33,18 @@ public:
     explicit selective_iterator(Iter begin, Iter end, Pred pred = Pred()) 
     : m_begin(begin), m_end(end), m_pred(pred), m_iter(begin)
     { 	while (m_iter != m_end && !m_pred(m_iter)) m_iter++; /*print_range();*/ }
+    // assignment
+    selective_iterator<Iter, Pred>& operator=(const selective_iterator<Iter, Pred>& arg)
+    {
+    	assert(arg.m_begin == this->m_begin);
+        assert(arg.m_end == this->m_end);
+        assert(arg.m_pred == this->m_pred);
+        m_iter = arg.m_iter;
+        return *this;
+    }
+    // copy constructor
+    selective_iterator(const selective_iterator<Iter, Pred>& arg) 
+    : m_begin(arg.m_begin), m_end(arg.m_end), m_pred(arg.m_pred), m_iter(arg.m_iter) {}
 
     typename /*std::iterator_traits<Iter>::reference*/ Iter::value_type operator*() const { return *m_iter; }
     typename std::iterator_traits<Iter>::pointer operator->() const { return &*m_iter; }
