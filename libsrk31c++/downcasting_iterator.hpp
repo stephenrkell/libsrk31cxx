@@ -15,6 +15,7 @@ class downcasting_iterator
     typedef downcasting_iterator<Iter, DownTo> self;
 public:
     // default constructor
+    downcasting_iterator() : m_iter() {}
     downcasting_iterator(Iter iter) : m_iter(iter) {}
 
 	// HACK: we need to return by value because of iterator_with_lens's brokeness

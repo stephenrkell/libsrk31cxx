@@ -28,6 +28,8 @@ class iterator_with_lens
     typedef iterator_with_lens<Iter, Lens> self;
 public:
     // default constructor
+    iterator_with_lens() : m_iter(), m_lens(Lens()) {}
+    
     explicit iterator_with_lens(Iter iter, const Lens& lens = Lens())
      :	m_iter(iter), m_lens(lens) {}
     
