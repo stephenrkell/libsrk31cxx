@@ -16,7 +16,9 @@ template<typename Base>
 struct conjoining_iterator
 : public boost::iterator_adaptor<conjoining_iterator<Base>, // Derived
             Base, // Base
-            typename std::iterator_traits<Base>::value_type  // Value
+            typename std::iterator_traits<Base>::value_type,  // Value
+            boost::use_default,
+            typename std::iterator_traits<Base>::value_type  // Reference
         > 
 {
 private:
@@ -82,7 +84,9 @@ public:
     }
 	bool equal(const self& arg) const { 
     	return this->base() == arg.base()
-    	&& *(this->p_sequence) == *(arg.p_sequence); }
+    	&& *(this->p_sequence) == *(arg.p_sequence); 
+    }
+    const typename std::iterator_traits<Base>::value_type dereference() const { return *this->base(); }
 };
 
 template <typename Iter>
