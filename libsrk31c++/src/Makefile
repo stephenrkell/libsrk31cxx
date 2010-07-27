@@ -1,4 +1,4 @@
-CXXFLAGS += -std=c++0x -g -I../c++-fileno/include -I${HOME}/opt/include -L../c++-fileno
+CXXFLAGS += -std=c++0x -g -I../libc++fileno/include -I../include
 OBJS := $(patsubst %.cpp,%.o,$(wildcard *.cpp))
 HDRS := $(wildcard *.hpp)
 
