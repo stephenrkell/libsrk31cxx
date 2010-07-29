@@ -10,4 +10,4 @@ clean:
 
 .PHONY: lib
 lib: src
-	cd lib; ln -sf ../src/libsrk31c++.a .
+	mkdir -p lib && cd lib && ln -sf ../src/libsrk31c++.a .
