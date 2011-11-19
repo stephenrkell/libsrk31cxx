@@ -6,19 +6,19 @@ namespace srk31
 	{
 		int *indent_level;
 		newline_tabbing_filter(int *plevel) : indent_level(plevel) {}
-    	template<typename Sink>
-    	bool put_char(Sink& dest, int c)
-    	{
-        	if (!boost::iostreams::put(dest, c)) return false;
-        	if (c == '\n')
+		template<typename Sink>
+		bool put_char(Sink& dest, int c)
+		{
+			if (!boost::iostreams::put(dest, c)) return false;
+			if (c == '\n')
 			{
 				for (int i = *indent_level; i > 0; i--) 
 				{
 					if (!boost::iostreams::put(dest, '\t')) return false;
 				}
 			}
-        	return true;
-    	}
+			return true;
+		}
 		template<typename Sink>
     	bool put(Sink& dest, int c) 
     	{

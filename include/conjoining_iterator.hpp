@@ -8,6 +8,10 @@
 #include <boost/iterator_adaptors.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
+#include <boost/enable_shared_from_this.hpp>
+
+namespace srk31
+{
 
 template<typename Iter>
 struct conjoining_sequence;
@@ -32,7 +36,10 @@ private:
 public:
 	// constructors
     // default constructor
-    conjoining_iterator() : p_sequence() {}
+    conjoining_iterator() : p_sequence() 
+	{
+		std::cerr << "Warning: default-constructed a conjoining_iterator" << std::endl;
+	}
     // one-sequence constructor
     conjoining_iterator(boost::shared_ptr<conjoining_sequence<Iter> > p_seq, 
     	Iter val, unsigned val_in)
@@ -67,6 +74,25 @@ public:
         	p_sequence->m_ultimate_end
             && this->base() == p_sequence->m_ends.at(m_currently_in))
         {
+			/* Want to assert that we haven't been distracted by a differing policy between
+			 * m_ends(m_currently_in) and m_ultimate_end. But in this generic context, we
+			 * can't embed such code.  */
+			//assert((p_sequence->m_ends.at(m_currently_in) == p_sequence->m_ultimate_end)
+			//	== (this->base() == p_sequence->m_ends.at(p_sequence->m_ends.size() - 1)));
+			 
+			if (!(p_sequence->m_begins.size() > m_currently_in + 1))
+			{
+				/* Here we are suffering from:
+				 * 
+				 * this->base() equals our current end
+				 * 
+				 * AND our current end is the last in m_ends
+				 *
+				 * but is NOT equal to m_ultimate_end. It should be! */
+				
+				assert(false);
+			}
+			
             this->base_reference() = p_sequence->m_begins.at(++m_currently_in);
         }
         canonicalize_position();
@@ -90,18 +116,20 @@ public:
 };
 
 template <typename Iter>
-struct conjoining_sequence
+struct conjoining_sequence : boost::enable_shared_from_this<conjoining_sequence<Iter> >
 {
 	std::vector<Iter> m_begins;
     std::vector<Iter> m_ends;
     Iter m_ultimate_end;
-    //
 	bool m_initialized;
 
     typedef conjoining_sequence<Iter> self;
     
     // default constructor
-    conjoining_sequence() : m_initialized(false) {}
+    conjoining_sequence() : m_initialized(false) 
+	{
+		std::cerr << "Warning: default-constructed a conjoining_sequence." << std::endl;
+	}
     // one-sequence constructor
     conjoining_sequence(Iter begin1, Iter end1)
      : m_ultimate_end(end1), m_initialized(true)
@@ -120,15 +148,18 @@ struct conjoining_sequence
         m_begins.push_back(begin);
         m_ends.push_back(end);
         m_ultimate_end = end;
+		assert(end == m_ultimate_end);
         m_initialized = true;
 		//std::cerr << "Appended " << (begin == end ? "empty" : "nonempty") << " sequence" << std::endl;
         return *this;
     }
-    conjoining_iterator<Iter> begin(boost::shared_ptr<conjoining_sequence<Iter> > p_seq) 
-    { assert(&*p_seq == this);
+    conjoining_iterator<Iter> begin(/*boost::shared_ptr<conjoining_sequence<Iter> > p_seq*/) 
+    { auto p_seq = this->shared_from_this();
+	  assert(&*p_seq == this);
       return conjoining_iterator<Iter>(p_seq, m_begins.at(0), 0); }
-    conjoining_iterator<Iter> end(boost::shared_ptr<conjoining_sequence<Iter> > p_seq) 
-    { assert(&*p_seq == this);
+    conjoining_iterator<Iter> end(/*boost::shared_ptr<conjoining_sequence<Iter> > p_seq*/) 
+    { auto p_seq = this->shared_from_this();
+	  assert(&*p_seq == this);
       return conjoining_iterator<Iter>(p_seq, m_ultimate_end, m_ends.size() - 1); }
     bool operator==(const conjoining_sequence<Iter>& arg)
     { return this->m_initialized && arg.m_initialized && 
@@ -142,5 +173,6 @@ struct conjoining_sequence
     }
 };
 
+} // end namespace srk31
 
 #endif

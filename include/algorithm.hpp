@@ -7,6 +7,20 @@
 
 namespace srk31 {
 
+// quick test whether an integer is a power of two
+inline bool is_power_of_two(int arg)
+{
+	do
+	{
+		// 2^n looks like 1 when shifted left n times...
+		if (arg == 1) return true;
+		if (arg % 2 != 0) return false;
+		// now we know we have bottom bit zero.
+		arg >>= 1;
+	} while (arg != 0);
+	return false;
+}
+
 // C++ predicate that is always true
 template <typename T> struct True : std::unary_function<T, bool>
 {
