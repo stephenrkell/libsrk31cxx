@@ -1,4 +1,4 @@
-CXXFLAGS += -std=c++0x -g -I../libc++fileno/include -I../include -fPIC
+CXXFLAGS += -std=c++0x -g  -I../include -fPIC
 OBJS := $(patsubst %.cpp,%.o,$(wildcard *.cpp))
 HDRS := $(wildcard *.hpp)
 
