@@ -60,8 +60,19 @@ public:
 		// if we're currently at an end, but not the ultimate end,
 		// advance to the beginning of the next non-empty sublist,
 		// or the ultimate end
+		
+		// NOTE: this is tricky because sometimes our end() iterators
+		// will not be distinct. So we have to look at m_currently_in
+		// too.
+		
+		//while (this->base() == p_sequence->m_ends.at(m_currently_in)
+		//	&& this->base() != p_sequence->m_ultimate_end) 
+		//{
+		//	this->base_reference() = p_sequence->m_begins.at(++m_currently_in);
+		//}
+		
 		while (this->base() == p_sequence->m_ends.at(m_currently_in)
-			&& this->base() != p_sequence->m_ultimate_end) 
+			&& m_currently_in != p_sequence->m_ends.size() - 1)
 		{
 			this->base_reference() = p_sequence->m_begins.at(++m_currently_in);
 		}
@@ -70,25 +81,6 @@ public:
 	void increment()
 	{
 		this->base_reference()++;
-		while ( p_sequence->m_ends.at(m_currently_in) != 
-			p_sequence->m_ultimate_end
-			&& this->base() == p_sequence->m_ends.at(m_currently_in))
-		{
-			if (!(p_sequence->m_begins.size() > m_currently_in + 1))
-			{
-				/* Here we are suffering from:
-				 * 
-				 * this->base() equals our current end
-				 * 
-				 * AND our current end is the last in m_ends
-				 *
-				 * but is NOT equal to m_ultimate_end. It should be! */
-				
-				assert(false);
-			}
-			
-			this->base_reference() = p_sequence->m_begins.at(++m_currently_in);
-		}
 		canonicalize_position();
 	}
 
@@ -115,7 +107,7 @@ struct conjoining_sequence : boost::enable_shared_from_this<conjoining_sequence<
 {
 	std::vector<Iter> m_begins;
 	std::vector<Iter> m_ends;
-	Iter m_ultimate_end;
+	//Iter m_ultimate_end;
 	bool m_initialized;
 
 	typedef conjoining_sequence<Iter> self;
@@ -125,11 +117,11 @@ struct conjoining_sequence : boost::enable_shared_from_this<conjoining_sequence<
 
 	// one-sequence constructor
 	conjoining_sequence(Iter begin1, Iter end1)
-	 : m_ultimate_end(end1), m_initialized(true)
+	 : /*m_ultimate_end(end1),*/ m_initialized(true)
 	{ m_begins.push_back(begin1); m_ends.push_back(end1); }
 	// two-sequence constructor
 	conjoining_sequence(Iter begin1, Iter end1, Iter begin2, Iter end2)
-	 : m_ultimate_end(end2), m_initialized(true)
+	 : /*m_ultimate_end(end2),*/ m_initialized(true)
 	{
 		m_begins.push_back(begin1); m_ends.push_back(end1); 
 		m_begins.push_back(begin2); m_ends.push_back(end2);
@@ -157,8 +149,8 @@ struct conjoining_sequence : boost::enable_shared_from_this<conjoining_sequence<
 	{
 		m_begins.push_back(begin);
 		m_ends.push_back(end);
-		m_ultimate_end = end;
-		assert(end == m_ultimate_end);
+		//m_ultimate_end = end;
+		//assert(end == m_ultimate_end);
 		m_initialized = true;
 		//std::cerr << "Appended " << (begin == end ? "empty" : "nonempty") << " sequence" << std::endl;
 		return *this;
@@ -177,14 +169,14 @@ struct conjoining_sequence : boost::enable_shared_from_this<conjoining_sequence<
 		assert(&*p_seq == this);
 		// FIXME: this doesn't work for empty m_ends
 		assert(m_ends.size() > 0);
-		return conjoining_iterator<Iter>(p_seq, m_ultimate_end, m_ends.size() - 1); 
+		return conjoining_iterator<Iter>(p_seq, m_ends.at(m_ends.size() - 1), m_ends.size() - 1); 
 	}
 	bool operator==(const conjoining_sequence<Iter>& arg)
 	{
 		return this->m_initialized && arg.m_initialized && 
 		this->m_begins == arg.m_begins &&
-		this->m_ends == arg.m_ends &&
-		this->m_ultimate_end == arg.m_ultimate_end; 
+		this->m_ends == arg.m_ends; // &&
+		//this->m_ultimate_end == arg.m_ultimate_end; 
 	}
 	bool operator!=(const conjoining_sequence<Iter>& arg) { return !(*this == arg); }
 	virtual ~conjoining_sequence() {
