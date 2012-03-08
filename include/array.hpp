@@ -1,6 +1,8 @@
 #ifndef LIBSRK31CXX_ARRAY_HPP_
 #define LIBSRK31CXX_ARRAY_HPP_
 
+namespace srk31 {
+
 /* This is (perhaps) the thinnest possible wrapper around C-style arrays in C++, 
  * designed with one goal only: to implement objects that may be returned by value
  * from a function, but are otherwise interchangeable with C-style arrays. */
@@ -38,6 +40,8 @@ public:
 	//operator El* () { return &a[0]; }
 	//operator El const* () const { return &a[0]; }
 };
+
+} // end namespace srk31
 
 /* To compile this test code into an executable, use 
  * $(CXX) -x c++ -DMAKE_TEST_PROGRAM ... */

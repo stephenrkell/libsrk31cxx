@@ -49,6 +49,16 @@ public:
 	}
 	// should be copy-constructible by compiler
 
+	// get the underlying sequence
+	boost::shared_ptr<conjoining_sequence<Iter> > 
+	get_sequence() { return p_sequence; }
+	// get the underlying sequence
+	boost::shared_ptr<conjoining_sequence<Iter> > 
+	get_sequence() const { return p_sequence; }
+
+	unsigned get_currently_in() const 
+	{ return m_currently_in; }
+
 	// move-to-end utility
 	void move_to_end()
 	{
@@ -102,6 +112,7 @@ public:
 	{ return *this->base(); }
 };
 
+/* Note Iter is the base iterator, not the conjoining_iterator. */
 template <typename Iter>
 struct conjoining_sequence : boost::enable_shared_from_this<conjoining_sequence<Iter> >
 {
@@ -111,6 +122,7 @@ struct conjoining_sequence : boost::enable_shared_from_this<conjoining_sequence<
 	bool m_initialized;
 
 	typedef conjoining_sequence<Iter> self;
+	typedef Iter iterator;
 	
 	// default constructor
 	conjoining_sequence() : m_initialized(false) {}
@@ -143,6 +155,9 @@ struct conjoining_sequence : boost::enable_shared_from_this<conjoining_sequence<
 		}
 			
 	}
+	
+	unsigned subsequences_count() const
+	{ return m_begins.size(); }
 
 	// append utility, for building
 	self& append(Iter begin, Iter end)
@@ -171,6 +186,11 @@ struct conjoining_sequence : boost::enable_shared_from_this<conjoining_sequence<
 		assert(m_ends.size() > 0);
 		return conjoining_iterator<Iter>(p_seq, m_ends.at(m_ends.size() - 1), m_ends.size() - 1); 
 	}
+	conjoining_iterator<Iter> at(const Iter& pos, unsigned currently_in)
+	{
+		return conjoining_iterator<Iter>(this->shared_from_this(), pos, currently_in);
+	}
+	
 	bool operator==(const conjoining_sequence<Iter>& arg)
 	{
 		return this->m_initialized && arg.m_initialized && 
