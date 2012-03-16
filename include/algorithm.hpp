@@ -8,17 +8,29 @@
 namespace srk31 {
 
 // quick test whether an integer is a power of two
-inline bool is_power_of_two(int arg)
+// inline bool is_power_of_two(int arg)
+// {
+// 	do
+// 	{
+// 		// 2^n looks like 1 when shifted left n times...
+// 		if (arg == 1) return true;
+// 		if (arg % 2 != 0) return false;
+//		// now we know we have bottom bit zero.
+// 		arg >>= 1;
+// 	} while (arg != 0);
+// 	return false;
+// }
+
+inline bool is_power_of_two(unsigned i)
 {
-	do
-	{
-		// 2^n looks like 1 when shifted left n times...
-		if (arg == 1) return true;
-		if (arg % 2 != 0) return false;
-		// now we know we have bottom bit zero.
-		arg >>= 1;
-	} while (arg != 0);
-	return false;
+        /* If we are a power of two, then one less than us                      
+         * has a run of low-order bits set and no others set,                   
+         * whereas we have a single (higher) bit set. So when                   
+         * we AND, we get zero. In all other (non-power-of-two)                 
+         * cases except zero, not all lower-order bits will                     
+         * roll over between i-1 and i, so there will be a nonzero              
+         * AND. */                                                              
+        return (i != 0) && !(i & (i - 1));
 }
 
 // C++ predicate that is always true
