@@ -60,10 +60,10 @@ public:
 	{ return m_currently_in; }
 
 	// move-to-end utility
-	void move_to_end()
-	{
-		this->base_reference() = p_sequence->m_ultimate_end;
-	}
+	//void move_to_end()
+	//{
+	//	this->base_reference() = p_sequence->m_ultimate_end;
+	//}
 	
 	void canonicalize_position()
 	{
