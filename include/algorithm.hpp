@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <functional>
 #include <iterator>
+#include <iostream> // for debugging
 
 namespace srk31 {
 
@@ -69,21 +70,23 @@ template <typename For, typename T, typename Cmp >
 For
 greatest_le(For begin, For end, const T& val, const Cmp& cmp)
 {
-	auto upper_bound = std::upper_bound(begin, end, val);
-
-	auto next_lower = upper_bound;
-	if (next_lower == end 
+	auto upper_bound = std::upper_bound(begin, end, val, cmp);
+	if (upper_bound == begin) goto fail; // no elements < val
+	
+	if (upper_bound == end 
 		|| cmp(*upper_bound, val)  // this is testing for non-equality of value...
 		|| cmp(val, *upper_bound)) // ... one way or the other
 	{
-		if (upper_bound == begin) goto fail; // no elements < val
-		else --next_lower; 
+		auto next_lower = upper_bound; --next_lower; 
 		
-		assert(!cmp(*next_lower, val));
+		std::cerr << "Next_lower has offset 0x" << std::hex << next_lower->first << std::dec << std::endl;
+		std::cerr << "Val has offset 0x" << std::hex << val.first << std::dec << std::endl;
+		
+		assert(cmp(*next_lower, val));
+		return next_lower;
 	}
 	// else upper_bound was a direct hit
-	
-	return next_lower;
+	return upper_bound;
 
 fail:
 	return end;
