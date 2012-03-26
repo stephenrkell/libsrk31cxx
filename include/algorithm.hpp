@@ -61,7 +61,34 @@ Out copy_if(In first, In last, Out res, Pred p)
 		++first;
 	}
 	return res;
-}	
+}
+
+/* This is modelled after std::upper_bound,
+ * in Stroustrup C++PL 3e S18.7.2. */
+template <typename For, typename T, typename Cmp >
+For
+greatest_le(For begin, For end, const T& val, const Cmp& cmp)
+{
+	auto upper_bound = std::upper_bound(begin, end, val);
+
+	auto next_lower = upper_bound;
+	if (next_lower == end 
+		|| cmp(*upper_bound, val)  // this is testing for non-equality of value...
+		|| cmp(val, *upper_bound)) // ... one way or the other
+	{
+		if (upper_bound == begin) goto fail; // no elements < val
+		else --next_lower; 
+		
+		assert(!cmp(*next_lower, val));
+	}
+	// else upper_bound was a direct hit
+	
+	return next_lower;
+
+fail:
+	return end;
+}
+// FIXME: add others (2-arg variant, least_ge x 2, greatest_lt, least_gt?)
 
 } // end namespace srk31
 
