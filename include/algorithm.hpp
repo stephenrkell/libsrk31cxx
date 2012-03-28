@@ -71,25 +71,23 @@ For
 greatest_le(For begin, For end, const T& val, const Cmp& cmp)
 {
 	auto upper_bound = std::upper_bound(begin, end, val, cmp);
-	if (upper_bound == begin) goto fail; // no elements < val
 	
-	if (upper_bound == end 
-		|| cmp(*upper_bound, val)  // this is testing for non-equality of value...
-		|| cmp(val, *upper_bound)) // ... one way or the other
+	// we might have no elements <= val
+	if (upper_bound != end && upper_bound == begin
+		&& cmp(val, *upper_bound)) return end;
+	else
 	{
+		// we should never get an upper_bound <= val
+		assert(upper_bound == end || cmp(val, *upper_bound)); 
+
 		auto next_lower = upper_bound; --next_lower; 
-		
+
 		std::cerr << "Next_lower has offset 0x" << std::hex << next_lower->first << std::dec << std::endl;
 		std::cerr << "Val has offset 0x" << std::hex << val.first << std::dec << std::endl;
-		
-		assert(cmp(*next_lower, val));
+
+		assert(cmp(*next_lower, val) || !cmp(val, *next_lower));
 		return next_lower;
 	}
-	// else upper_bound was a direct hit
-	return upper_bound;
-
-fail:
-	return end;
 }
 // FIXME: add others (2-arg variant, least_ge x 2, greatest_lt, least_gt?)
 
