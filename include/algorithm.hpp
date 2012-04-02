@@ -66,12 +66,11 @@ Out copy_if(In first, In last, Out res, Pred p)
 
 /* This is modelled after std::upper_bound,
  * in Stroustrup C++PL 3e S18.7.2. */
+/* This version avoids doing linear search to find the upper bound. */
 template <typename For, typename T, typename Cmp >
 For
-greatest_le(For begin, For end, const T& val, const Cmp& cmp)
+greatest_le_from_upper_bound(For begin, For end, For upper_bound, const T& val, const Cmp& cmp)
 {
-	auto upper_bound = std::upper_bound(begin, end, val, cmp);
-	
 	// we might have no elements <= val
 	if (upper_bound != end && upper_bound == begin
 		&& cmp(val, *upper_bound)) return end;
@@ -82,13 +81,25 @@ greatest_le(For begin, For end, const T& val, const Cmp& cmp)
 
 		auto next_lower = upper_bound; --next_lower; 
 
-		std::cerr << "Next_lower has offset 0x" << std::hex << next_lower->first << std::dec << std::endl;
-		std::cerr << "Val has offset 0x" << std::hex << val.first << std::dec << std::endl;
+		//std::cerr << "Next_lower has offset 0x" << std::hex << next_lower->first << std::dec << std::endl;
+		//std::cerr << "Val has offset 0x" << std::hex << val.first << std::dec << std::endl;
 
 		assert(cmp(*next_lower, val) || !cmp(val, *next_lower));
 		return next_lower;
 	}
 }
+/* This version finds the upper bound by itself, probably by linear search. */
+template <typename For, typename T, typename Cmp >
+For
+greatest_le(For begin, For end, const T& val, const Cmp& cmp)
+{
+	auto upper_bound = std::upper_bound(begin, end, val, cmp);
+	
+	return greatest_le_from_upper_bound(begin, end, upper_bound, val, cmp);
+}
+
+
+
 // FIXME: add others (2-arg variant, least_ge x 2, greatest_lt, least_gt?)
 
 } // end namespace srk31
