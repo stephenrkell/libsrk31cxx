@@ -71,7 +71,12 @@ template <typename For, typename T, typename Cmp >
 For
 greatest_le_from_upper_bound(For begin, For end, For upper_bound, const T& val, const Cmp& cmp)
 {
-	// we might have no elements <= val
+	// we might have no elements
+	if (begin == end) return end;
+
+	// we might have no elements <= val, 
+	// i.e. upper_bound == begin (but not end)
+	// and not a direct hit (remember the upper bound is wrt "<" not "<=")
 	if (upper_bound != end && upper_bound == begin
 		&& cmp(val, *upper_bound)) return end;
 	else
