@@ -48,6 +48,13 @@ count(In first, In last)
 	return std::count_if(first, last, True<typename std::iterator_traits<In>::value_type>());
 }
 
+template <class In>
+In
+nth_zero_based(In first, In last, unsigned n)
+{
+	while (n != 0 && first != last) { ++first; --n; }
+}
+
 // function that returns the length of an array
 template<class T, size_t s> size_t array_len(T (&arg)[s]) { return s; }
 
