@@ -8,4 +8,4 @@ libsrk31c++.a: $(OBJS) $(HDRS)
 	ar r "$@" $(OBJS)
 
 clean:
-	rm -f libsrk31c++.{a,so} *.o
+	rm -f libsrk31c++.a libsrk31c++.so *.o

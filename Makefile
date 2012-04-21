@@ -7,6 +7,7 @@ src:
 .PHONY: clean
 clean:
 	$(MAKE) -C src clean
+	rm -f lib/*.a lib/*.so
 
 .PHONY: lib
 lib: src

@@ -5,6 +5,7 @@
 #include <functional>
 #include <iterator>
 #include <iostream> // for debugging
+#include "ordinal.hpp" // also for debugging messages
 
 namespace srk31 {
 
@@ -50,9 +51,13 @@ count(In first, In last)
 
 template <class In>
 In
-nth_zero_based(In first, In last, unsigned n)
+nth_zero_based(In pos, In last, unsigned n)
 {
-	while (n != 0 && first != last) { ++first; --n; }
+	//std::cerr << "Looking for " << n << ordinal_suffix(n) << " in a sequence...." << std::endl;
+	while (n != 0 && pos != last) { ++pos; --n; }
+	//if (n == 0 && pos != last) std::cerr << "Success." << std::endl;
+	//else std::cerr << "Hit end." << std::endl;
+	return pos;
 }
 
 // function that returns the length of an array
