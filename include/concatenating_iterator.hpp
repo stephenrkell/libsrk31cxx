@@ -6,9 +6,7 @@
 #include <iostream>
 #include <cassert>
 #include <boost/iterator_adaptors.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/make_shared.hpp>
-#include <boost/enable_shared_from_this.hpp>
+#include <memory>
 
 namespace srk31
 {
@@ -28,7 +26,7 @@ struct concatenating_iterator
 private:
 	typedef typename std::iterator_traits<Base>::value_type Value;
 	typedef Base Iter;
-	boost::shared_ptr<concatenating_sequence<Iter> > p_sequence;
+	std::shared_ptr<concatenating_sequence<Iter> > p_sequence;
 	unsigned m_currently_in;
 	bool alloc_sequence;
 	
@@ -39,7 +37,7 @@ public:
 	concatenating_iterator() : p_sequence() {}
 	// one-sequence constructor
 	concatenating_iterator(
-		boost::shared_ptr<concatenating_sequence<Iter> > p_seq, 
+		std::shared_ptr<concatenating_sequence<Iter> > p_seq, 
 		Iter val, unsigned val_in)
 	 : concatenating_iterator::iterator_adaptor_(val), 
 	   p_sequence(p_seq), 
@@ -50,10 +48,10 @@ public:
 	// should be copy-constructible by compiler
 
 	// get the underlying sequence
-	boost::shared_ptr<concatenating_sequence<Iter> > 
+	std::shared_ptr<concatenating_sequence<Iter> > 
 	get_sequence() { return p_sequence; }
 	// get the underlying sequence
-	boost::shared_ptr<concatenating_sequence<Iter> > 
+	std::shared_ptr<concatenating_sequence<Iter> > 
 	get_sequence() const { return p_sequence; }
 
 	unsigned get_currently_in() const 
@@ -116,7 +114,7 @@ public:
 
 /* Note Iter is the base iterator, not the concatenating_iterator. */
 template <typename Iter>
-struct concatenating_sequence : boost::enable_shared_from_this<concatenating_sequence<Iter> >
+struct concatenating_sequence : std::enable_shared_from_this<concatenating_sequence<Iter> >
 {
 	std::vector<Iter> m_begins;
 	std::vector<Iter> m_ends;
