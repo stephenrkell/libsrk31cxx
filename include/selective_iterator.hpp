@@ -92,7 +92,7 @@ namespace srk31
 		typedef selective_iterator_mixin<Pred, Iter, selective_iterator> super;
 		void print_range()
 		{
-			std::cerr << "selective_iterator selecting over range: ";
+			// std::cerr << "selective_iterator selecting over range: ";
 			for (Iter i = this->m_begin; i != this->m_end; i++)
 			{
 				std::cerr << *i;
