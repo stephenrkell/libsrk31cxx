@@ -11,33 +11,35 @@
 namespace srk31
 {
 
-template<typename Iter>
+template<typename Iter, typename Value, typename Reference>
 struct concatenating_sequence;
 
-template<typename Base>
+template <typename Base, 
+	typename Value = typename std::iterator_traits<Base>::value_type, 
+	typename Reference = typename std::iterator_traits<Base>::value_type& >
 struct concatenating_iterator
-: public boost::iterator_adaptor<concatenating_iterator<Base>, // Derived
+: public boost::iterator_adaptor<concatenating_iterator<Base, Value, Reference>, // Derived
 			Base, // Base
-			typename std::iterator_traits<Base>::value_type,  // Value
+			Value, 
 			boost::use_default,
-			typename std::iterator_traits<Base>::value_type  // Reference
+			Reference
 		> 
 {
 private:
-	typedef typename std::iterator_traits<Base>::value_type Value;
 	typedef Base Iter;
-	std::shared_ptr<concatenating_sequence<Iter> > p_sequence;
+	typedef concatenating_iterator<Base, Value, Reference> self;
+	typedef self Derived;
+	std::shared_ptr<concatenating_sequence<Iter, Value, Reference> > p_sequence;
 	unsigned m_currently_in;
 	bool alloc_sequence;
 	
-	typedef concatenating_iterator<Base> self;
 public:
 	// constructors
 	// default constructor
 	concatenating_iterator() : p_sequence() {}
 	// one-sequence constructor
 	concatenating_iterator(
-		std::shared_ptr<concatenating_sequence<Iter> > p_seq, 
+		std::shared_ptr<concatenating_sequence<Iter, Value, Reference> > p_seq, 
 		Iter val, unsigned val_in)
 	 : concatenating_iterator::iterator_adaptor_(val), 
 	   p_sequence(p_seq), 
@@ -48,10 +50,10 @@ public:
 	// should be copy-constructible by compiler
 
 	// get the underlying sequence
-	std::shared_ptr<concatenating_sequence<Iter> > 
+	std::shared_ptr<concatenating_sequence<Iter, Value, Reference> > 
 	get_sequence() { return p_sequence; }
 	// get the underlying sequence
-	std::shared_ptr<concatenating_sequence<Iter> > 
+	std::shared_ptr<concatenating_sequence<Iter, Value, Reference> > 
 	get_sequence() const { return p_sequence; }
 
 	unsigned get_currently_in() const 
@@ -107,20 +109,22 @@ public:
 		&& *(this->p_sequence) == *(arg.p_sequence)
 		&& this->m_currently_in == arg.m_currently_in;
 	}
-	const typename std::iterator_traits<Base>::value_type dereference() const 
+	const Reference /*typename std::iterator_traits<Base>::value_type*/ dereference() const 
 	{ auto& base = this->base();
 	  return *base; }
 };
 
 /* Note Iter is the base iterator, not the concatenating_iterator. */
-template <typename Iter>
-struct concatenating_sequence : std::enable_shared_from_this<concatenating_sequence<Iter> >
+template <typename Iter, 
+	typename Value = typename std::iterator_traits<Iter>::value_type, 
+	typename Reference = typename std::iterator_traits<Iter>::value_type& >
+struct concatenating_sequence : std::enable_shared_from_this<concatenating_sequence<Iter, Value, Reference> >
 {
 	std::vector<Iter> m_begins;
 	std::vector<Iter> m_ends;
 	bool m_initialized;
 
-	typedef concatenating_sequence<Iter> self;
+	typedef concatenating_sequence<Iter, Value, Reference> self;
 	typedef Iter iterator;
 	
 	// default constructor
@@ -170,34 +174,34 @@ struct concatenating_sequence : std::enable_shared_from_this<concatenating_seque
 		//std::cerr << "Appended " << (begin == end ? "empty" : "nonempty") << " sequence" << std::endl;
 		return *this;
 	}
-	concatenating_iterator<Iter> begin() 
+	concatenating_iterator<Iter, Value, Reference> begin() 
 	{
 		auto p_seq = this->shared_from_this();
 		assert(&*p_seq == this);
 		// FIXME: this doesn't work for empty m_begins
 		assert(subsequences_count() > 0);
-		return concatenating_iterator<Iter>(p_seq, m_begins.at(0), 0); 
+		return concatenating_iterator<Iter, Value, Reference>(p_seq, m_begins.at(0), 0); 
 	}
-	concatenating_iterator<Iter> end() 
+	concatenating_iterator<Iter, Value, Reference> end() 
 	{
 		auto p_seq = this->shared_from_this();
 		assert(&*p_seq == this);
 		// FIXME: this doesn't work for empty m_ends
 		assert(m_ends.size() > 0);
-		return concatenating_iterator<Iter>(p_seq, m_ends.at(m_ends.size() - 1), m_ends.size() - 1); 
+		return concatenating_iterator<Iter, Value, Reference>(p_seq, m_ends.at(m_ends.size() - 1), m_ends.size() - 1); 
 	}
-	concatenating_iterator<Iter> at(const Iter& pos, unsigned currently_in)
+	concatenating_iterator<Iter, Value, Reference> at(const Iter& pos, unsigned currently_in)
 	{
-		return concatenating_iterator<Iter>(this->shared_from_this(), pos, currently_in);
+		return concatenating_iterator<Iter, Value, Reference>(this->shared_from_this(), pos, currently_in);
 	}
 	
-	bool operator==(const concatenating_sequence<Iter>& arg)
+	bool operator==(const concatenating_sequence<Iter, Value, Reference>& arg)
 	{
 		return this->m_initialized && arg.m_initialized && 
 		this->m_begins == arg.m_begins &&
 		this->m_ends == arg.m_ends; // &&
 	}
-	bool operator!=(const concatenating_sequence<Iter>& arg) { return !(*this == arg); }
+	bool operator!=(const concatenating_sequence<Iter, Value, Reference>& arg) { return !(*this == arg); }
 	virtual ~concatenating_sequence() {
 		// std::cerr << "Warning: destructed concatenating_sequence!" << std::endl; 
 	}
