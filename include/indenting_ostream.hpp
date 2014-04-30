@@ -9,14 +9,14 @@
 #include <iostream>
 #include <cassert>
 #include <unistd.h>
-//#include <boost/iostreams/concepts.hpp>    // input_filter
-//#include <boost/iostreams/operations.hpp>  // get()
-//#include <boost/iostreams/stream.hpp>
-//#include <boost/iostreams/stream_buffer.hpp>
-//#include <boost/iostreams/filtering_streambuf.hpp>
+#include <boost/iostreams/concepts.hpp>    // input_filter
+#include <boost/iostreams/operations.hpp>  // get()
+#include <boost/iostreams/stream.hpp>
+#include <boost/iostreams/stream_buffer.hpp>
+#include <boost/iostreams/filtering_streambuf.hpp>
 #include <fileno.hpp>
 
-namespace boost { namespace iostreams { class filtering_ostreambuf; } }
+// namespace boost { namespace iostreams { class filtering_ostreambuf; } }
 
 namespace srk31 {
 	// this class does all the work
