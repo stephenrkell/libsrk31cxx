@@ -93,13 +93,13 @@ namespace srk31
 		void print_range()
 		{
 			// std::cerr << "selective_iterator selecting over range: ";
-			for (Iter i = this->m_begin; i != this->m_end; i++)
-			{
-				std::cerr << *i;
-				std::cerr << " ";
-			}
+			// for (Iter i = this->m_begin; i != this->m_end; i++)
+			// {
+			// 	std::cerr << *i;
+			// 	std::cerr << " ";
+			// }
 			//if (m_begin == m_end) assert(false);
-			std::cerr << std::endl;
+			// std::cerr << std::endl;
 		}
 	public:
 		// no default constructor
