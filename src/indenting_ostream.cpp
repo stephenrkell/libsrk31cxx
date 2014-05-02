@@ -1,4 +1,4 @@
-#include "indenting_ostream.hpp"
+#include <srk31/indenting_ostream.hpp>
 
 namespace srk31
 {
