@@ -11,4 +11,4 @@ clean:
 
 .PHONY: lib
 lib: src
-	mkdir -p lib && cd lib && ln -sf ../src/libsrk31c++.a .
+	mkdir -p lib && cd lib && ln -sf ../src/libsrk31c++.a ../src/libsrk31c++.so .
