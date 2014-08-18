@@ -18,8 +18,8 @@ namespace srk31
 	: public std::iterator_traits<Iter> // borrow container's typedefs
 	{
 		bool have_begin;
-		const Iter m_begin;
-		const Iter m_end;
+		/* const */ Iter m_begin;
+		/* const */ Iter m_end;
 		const Pred& m_pred;
 		typedef selective_iterator_mixin<Pred, Iter, MixerIn> self;
 
@@ -38,25 +38,34 @@ namespace srk31
 		// assignment
 		self& operator=(const self& arg)
 		{
-			assert(arg.m_begin == this->m_begin);
-			assert(arg.m_end == this->m_end);
+			//assert(arg.m_begin == this->m_begin);
+			//assert(arg.m_end == this->m_end);
+			this->m_begin = arg.m_begin;
+			this->m_end = arg.m_end;
+//			this->m_pred = arg.m_pred;
 			assert(arg.m_pred == this->m_pred);
+			this->have_begin = arg.have_begin;
 			return *this;
 		}
 		self& operator=(self&& arg) // move assignment
 		{
-			assert(arg.m_begin == this->m_begin);
-			assert(arg.m_end == this->m_end);
+			//assert(arg.m_begin == this->m_begin);
+			//assert(arg.m_end == this->m_end);
+			this->m_begin = std::move(arg.m_begin);
+			this->m_end = std::move(arg.m_end);
+//			this->m_pred = std::move(arg.m_pred);
 			assert(arg.m_pred == this->m_pred);
+			this->have_begin = std::move(arg.have_begin);
 			return *this;
 		}
 		// copy constructor
 		selective_iterator_mixin(const self& arg) 
-		: m_begin(arg.m_begin), m_end(arg.m_end), m_pred(arg.m_pred) {}
+		: have_begin(arg.have_begin), m_begin(arg.m_begin), m_end(arg.m_end), 
+		  m_pred(arg.m_pred) {}
 		// move constructor
 		selective_iterator_mixin(self&& arg) 
-		: m_begin(std::move(arg.m_begin)), m_end(std::move(arg.m_end)), 
-		  m_pred(std::move(arg.m_pred))
+		: have_begin(std::move(arg.have_begin)), m_begin(std::move(arg.m_begin)), 
+		  m_end(std::move(arg.m_end)), m_pred(std::move(arg.m_pred))
 		{}
 
 		typename std::iterator_traits<Iter>::reference operator*() const { return *base(); }
@@ -131,17 +140,16 @@ namespace srk31
 		// assignment
 		self& operator=(const self& arg)
 		{
-			assert(arg.m_begin == this->m_begin);
-			assert(arg.m_end == this->m_end);
-			assert(arg.m_pred == this->m_pred);
+			*static_cast<super*>(this) = static_cast<const super&>(arg);
 			m_iter = arg.m_iter;
 			return *this;
 		}
 		self& operator=(self&& arg) // move assignment
 		{
-			assert(arg.m_begin == this->m_begin);
-			assert(arg.m_end == this->m_end);
-			assert(arg.m_pred == this->m_pred);
+			//assert(arg.m_begin == this->m_begin);
+			//assert(arg.m_end == this->m_end);
+			//assert(arg.m_pred == this->m_pred);
+			*static_cast<super*>(this) = std::move(static_cast<super&&>(arg));
 			m_iter = std::move(m_iter);
 			return *this;
 		}	
