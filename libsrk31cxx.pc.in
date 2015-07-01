@@ -1,0 +1,14 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+pkgincludedir=${includedir}/@PACKAGE@
+pkglibdir=@pkglibdir@
+datarootdir=@datarootdir@
+datadir=@datadir@
+
+Name: libsrk31cxx
+Description: Stephen Kell's rag-bag of C++ utilities
+Version: 0.1
+Cflags: -I${pkgincludedir}
+Libs: -L${libdir} -lsrk31cxx
