@@ -1,0 +1,2 @@
+libtoolize && autoreconf -i && ./configure --prefix=(somewhere) && make && [sudo] make install
+
