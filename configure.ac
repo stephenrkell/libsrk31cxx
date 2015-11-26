@@ -26,6 +26,18 @@ AX_BOOST_BASE
 AC_CHECK_HEADER([boost/iostreams/filtering_stream.hpp], [], [AC_MSG_FAILURE([boost::iostreams is required])])
 AC_HAVE_LIBRARY(boost_iostreams, [], [AC_MSG_FAILURE([boost::iostreams is required])])
 
+# If the user (sanely) supplied _CXXFLAGS, and not _CFLAGS, 
+# duplicate the latter to the former.  See rant about pkg-config in Makefile.am.
+# We save the old _CFLAGS.
+USER_LIBCXXFILENO_CFLAGS="$LIBCXXFILENO_CFLAGS"
+LIBCXXFILENO_CFLAGS="$LIBCXXFILENO_CXXFLAGS"
+
+# Now, all the information from pkg-config or from user _CXXFLAGS) is in _CFLAGS.
+# We might also have USER_ _CFLAGS, if the user did what pkg.m4 stupidly told them.
+# We use this information (i.e. propagate to _CXXFLAGS) only if the user *didn't* give us
+# _CXXFLAGS.
+AM_CONDITIONAL(SUPPLIED_LIBCXXFILENO_CFLAGS, [test x"$USER_LIBCXXFILENO_CFLAGS" != x && test x"$LIBCXXFILENO_CXXFLAGS" = x])
+
 PKG_PROG_PKG_CONFIG
 PKG_CHECK_MODULES([LIBCXXFILENO], [libcxxfileno])
 
