@@ -1,8 +1,8 @@
 ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = include src
-extra_DIST = libsrk31cxx.pc.in
+extra_DIST = libsrk31c++.pc.in
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = libsrk31cxx.pc
+pkgconfig_DATA = libsrk31c++.pc
 
 # pkg-config doesn't understand PKG_CXXFLAGS, but I'm buggered
 # if I'm going to have my Makefiles use _CFLAGS to mean _CXXFLAGS.
@@ -17,3 +17,11 @@ LIBCXXFILENO_CXXFLAGS = $(USER_LIBCXXFILENO_CFLAGS)
 else
 LIBCXXFILENO_CXXFLAGS = $(LIBCXXFILENO_CFLAGS)
 endif
+
+lib/libsrk31c++.so: $(lib_LTLIBRARIES)
+	mkdir -p lib && cd lib && ln -sf ../src/.libs/libsrk31c++.so .
+
+lib/libsrk31c++.so.0: $(lib_LTLIBRARIES)
+	mkdir -p lib && cd lib && ln -sf ../src/.libs/libsrk31c++.so.0 .
+
+all: lib/libsrk31c++.so lib/libsrk31c++.so.0

@@ -7,8 +7,8 @@ pkglibdir=@pkglibdir@
 datarootdir=@datarootdir@
 datadir=@datadir@
 
-Name: libsrk31cxx
+Name: libsrk31c++
 Description: Stephen Kell's rag-bag of C++ utilities
 Version: 0.1
 Cflags: -I${pkgincludedir}
-Libs: -L${libdir} -lsrk31cxx
+Libs: -L${libdir} -lsrk31c++

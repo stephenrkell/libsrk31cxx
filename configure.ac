@@ -1,6 +1,6 @@
 AC_CONFIG_MACRO_DIR([m4])
 AC_PREREQ([2.69])
-AC_INIT([libsrk31cxx], [0.1], [srk31@cl.cam.ac.uk])
+AC_INIT([libsrk31c++], [0.1], [srk31@cl.cam.ac.uk])
 AC_CONFIG_SRCDIR([include/srk31/array_slice_iterator.hpp])
 CFLAGS="$CFLAGS -I$prefix/include $CFLAGS"
 CXXFLAGS="$CXXFLAGS -I$prefix/include $CXXFLAGS"
@@ -39,6 +39,6 @@ LIBCXXFILENO_CFLAGS="$LIBCXXFILENO_CXXFLAGS"
 AM_CONDITIONAL(SUPPLIED_LIBCXXFILENO_CFLAGS, [test x"$USER_LIBCXXFILENO_CFLAGS" != x && test x"$LIBCXXFILENO_CXXFLAGS" = x])
 
 PKG_PROG_PKG_CONFIG
-PKG_CHECK_MODULES([LIBCXXFILENO], [libcxxfileno])
+PKG_CHECK_MODULES([LIBCXXFILENO], [libc++fileno])
 
-AC_OUTPUT([Makefile include/Makefile src/Makefile libsrk31cxx.pc])
+AC_OUTPUT([Makefile include/Makefile src/Makefile libsrk31c++.pc])

@@ -1,4 +1,4 @@
-lib_LTLIBRARIES = libsrk31cxx.la
-libsrk31cxx_la_SOURCES = indenting_ostream.cpp
-libsrk31cxx_la_CXXFLAGS = -I../include $(LIBCXXFILENO_CFLAGS)
-libsrk31cxx_la_LIBS = $(LIBCXXFILENO_LIBS)
+lib_LTLIBRARIES = libsrk31c++.la
+libsrk31c___la_SOURCES = indenting_ostream.cpp
+libsrk31c___la_CXXFLAGS = -I../include $(LIBCXXFILENO_CFLAGS)
+libsrk31c___la_LIBS = $(LIBCXXFILENO_LIBS)
