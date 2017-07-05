@@ -14,40 +14,82 @@ namespace srk31
 template<typename Iter, typename Value, typename Reference>
 struct concatenating_sequence;
 
-template <typename Base, 
-	typename Value = typename std::iterator_traits<Base>::value_type, 
-	typename Reference = typename std::iterator_traits<Base>::value_type& >
-struct concatenating_iterator
-: public boost::iterator_adaptor<concatenating_iterator<Base, Value, Reference>, // Derived
-			Base, // Base
-			Value, 
-			boost::use_default,
-			Reference
-		> 
+/* Tempted to try something a bit weird: two levels of CRTP. 
+ * The first is with iterator_adaptor, to get our iterator-like
+ * thing out of the simpler increment(), dereference() etc..
+ * OH, WAIT. This is no good. If we use iterator_adaptor,
+ * we contain an instance of the iterator. The point of the 
+ * mixin is that we don't want to do that. Although possibly
+ * the mixin is pointless -- what good does the separation
+ * of the mixin from the iterator actually do? -- we do want
+ * our iterator to be derived from Iter. */
+
+template < typename Iter
+         , typename MixerIn
+         , typename Value = typename std::iterator_traits<Iter>::value_type
+         , typename Reference = typename std::iterator_traits<Iter>::value_type&
+         >
+struct concatenating_iterator_mixin
 {
 private:
-	typedef Base Iter;
-	typedef concatenating_iterator<Base, Value, Reference> self;
-	typedef self Derived;
+	typedef concatenating_iterator_mixin<Iter, MixerIn, Value, Reference> self;
+
 	std::shared_ptr<concatenating_sequence<Iter, Value, Reference> > p_sequence;
 	unsigned m_currently_in;
+	bool initially_at_beginning;
 	bool alloc_sequence;
 	
 public:
 	// constructors
-	// default constructor
-	concatenating_iterator() : p_sequence() {}
-	// one-sequence constructor
-	concatenating_iterator(
-		std::shared_ptr<concatenating_sequence<Iter, Value, Reference> > p_seq, 
+	concatenating_iterator_mixin() : p_sequence(), m_currently_in(0),
+	  initially_at_beginning(false),
+	  alloc_sequence(false)
+	{}
+	concatenating_iterator_mixin(self&& arg) 
+	: p_sequence(arg.p_sequence), m_currently_in(std::move(arg.m_currently_in)),
+	  initially_at_beginning(arg.initially_at_beginning),
+	  alloc_sequence(arg.alloc_sequence)
+	{}
+	concatenating_iterator_mixin(const self& arg) 
+	: p_sequence(arg.p_sequence), m_currently_in(arg.m_currently_in),
+	  initially_at_beginning(arg.initially_at_beginning),
+	  alloc_sequence(arg.alloc_sequence)
+	{}	// one-sequence constructor
+	concatenating_iterator_mixin(
+		std::shared_ptr<
+			concatenating_sequence<Iter, Value, Reference>
+		> p_seq,
 		Iter val, unsigned val_in)
-	 : concatenating_iterator::iterator_adaptor_(val), 
-	   p_sequence(p_seq), 
-	   m_currently_in(val_in) 
+	 : p_sequence(p_seq), 
+	   m_currently_in(val_in),
+	   initially_at_beginning(p_seq->m_begins.size() > 0 && val == p_seq->m_begins.at(0))
 	{
+		iter() = val;
 		canonicalize_position();
 	}
 	// should be copy-constructible by compiler
+	// assignment
+	self& operator=(const self& arg)
+	{
+		this->p_sequence = arg.p_sequence;
+		this->m_currently_in = arg.m_currently_in;
+		this->initially_at_beginning = arg.initially_at_beginning;
+		this->alloc_sequence = arg.alloc_sequence;
+		iter() = arg.iter();
+		return *this;
+	}
+	self& operator=(self&& arg) // move assignment
+	{
+		this->p_sequence = std::move(arg.p_sequence);
+		this->m_currently_in = arg.m_currently_in;
+		this->initially_at_beginning = arg.initially_at_beginning;
+		this->alloc_sequence = arg.alloc_sequence;
+		iter() = std::move(arg.iter());
+		return *this;
+	}
+	
+	const Iter& iter() const { return *static_cast<const MixerIn *>(this); }
+		  Iter& iter()       { return *static_cast<      MixerIn *>(this); }
 
 	// get the underlying sequence
 	std::shared_ptr<concatenating_sequence<Iter, Value, Reference> > 
@@ -59,12 +101,6 @@ public:
 	unsigned get_currently_in() const 
 	{ return m_currently_in; }
 
-	// move-to-end utility
-	//void move_to_end()
-	//{
-	//	this->base_reference() = p_sequence->m_ultimate_end;
-	//}
-	
 	void canonicalize_position()
 	{
 		// if we're currently at an end, but not the ultimate end,
@@ -75,50 +111,112 @@ public:
 		// will not be distinct. So we have to look at m_currently_in
 		// too.
 		
-		//while (this->base() == p_sequence->m_ends.at(m_currently_in)
-		//	&& this->base() != p_sequence->m_ultimate_end) 
-		//{
-		//	this->base_reference() = p_sequence->m_begins.at(++m_currently_in);
-		//}
-		
-		while (this->base() == p_sequence->m_ends.at(m_currently_in)
+		while (this->iter() == p_sequence->m_ends.at(m_currently_in)
 			&& m_currently_in != p_sequence->m_ends.size() - 1)
 		{
-			this->base_reference() = p_sequence->m_begins.at(++m_currently_in);
+			this->iter() = p_sequence->m_begins.at(++m_currently_in);
 		}
 	}	
 
+	Reference operator*() const
+	{ return *iter(); }
+	Value *operator->() const 
+	{ return &*iter(); }
+	
+	bool done_complete_pass() const
+	{
+		/* We're not a random-access iterator, so the only way to get to the end
+		 * is to iterate along from the beginning or wherever we started. 
+		 * To do a complete pass, simply start at the beginning.
+		 * Intervening copy-assignments should copy the flag. */
+		return initially_at_beginning && *this == p_sequence->end();
+	}
+	
+
+private:
 	void increment()
 	{
-		this->base_reference()++;
+		this->iter()++;
 		canonicalize_position();
 	}
-
 	void decrement()
 	{	
 		while (m_currently_in != 0 
-			&& this->base() == p_sequence->m_begins.at(m_currently_in))
-		{ this->base_reference() = p_sequence->m_ends.at(--m_currently_in); }
-
-		this->base_reference()--;
-		
+			&& this->iter() == p_sequence->m_begins.at(m_currently_in))
+		{ this->iter() = p_sequence->m_ends.at(--m_currently_in); }
+		this->iter()--;
 		canonicalize_position();
 	}
-	bool equal(const self& arg) const { 
-		return this->base() == arg.base()
+public:
+	self& operator++() // prefix
+	{
+		increment();
+		return *this;
+	}
+	self operator++(int) // postfix ++, so copying
+	{
+		self tmp = *this;
+		tmp.increment();
+		return std::move(tmp);
+	}
+	self& operator--() // prefix --
+	{
+		decrement();
+		return *this;
+	}
+	self operator--(int) // postfix, so copying
+	{
+		self tmp = *this;
+		tmp.decrement();
+		return std::move(tmp);
+	}
+	
+private:
+	bool equal(const self& arg) const 
+	{ 
+		return this->iter() == arg.iter()
 		&& *(this->p_sequence) == *(arg.p_sequence)
 		&& this->m_currently_in == arg.m_currently_in;
 	}
-	const Reference /*typename std::iterator_traits<Base>::value_type*/ dereference() const 
-	{ auto& base = this->base();
-	  return *base; }
+public:
+	bool operator==(const self& arg) const { return this->equal(arg); }
+	bool operator!=(const self& arg) const { return !this->equal(arg); }
 };
 
-/* Note Iter is the base iterator, not the concatenating_iterator. */
+template < class Iter
+         , typename Value = typename std::iterator_traits<Iter>::value_type
+         , typename Reference = typename std::iterator_traits<Iter>::value_type&
+         >
+class concatenating_iterator
+	: public Iter
+	, public concatenating_iterator_mixin< Iter
+	                                     , concatenating_iterator<Iter, Value, Reference>
+	                                     , Value
+	                                     , Reference>
+{
+	typedef concatenating_iterator<Iter, Value, Reference> self;
+	typedef concatenating_iterator_mixin<Iter, self, Value, Reference> super;
+public:
+	using super::operator++;
+	using super::operator--;
+	using super::operator!=;
+	using super::operator==;
+	using super::operator*;
+	using super::operator->;
+	// in  we borrow the copy constructor too
+	using super::operator=;
+	
+	// which constructors does this import?
+	using typename super::concatenating_iterator_mixin;
+};
+
+
+/* Note Iter is the base iterator, not the concatenating_iterator_mixin. */
 template <typename Iter, 
 	typename Value = typename std::iterator_traits<Iter>::value_type, 
 	typename Reference = typename std::iterator_traits<Iter>::value_type& >
-struct concatenating_sequence : std::enable_shared_from_this<concatenating_sequence<Iter, Value, Reference> >
+struct concatenating_sequence 
+	: std::enable_shared_from_this<concatenating_sequence<Iter, Value, Reference> >
 {
 	std::vector<Iter> m_begins;
 	std::vector<Iter> m_ends;
@@ -156,7 +254,6 @@ struct concatenating_sequence : std::enable_shared_from_this<concatenating_seque
 			}
 			return true;
 		}
-			
 	}
 	
 	unsigned subsequences_count() const
