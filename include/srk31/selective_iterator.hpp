@@ -46,7 +46,7 @@ namespace srk31
 		bool have_begin;
 		/* const */ Iter m_begin;
 		/* const */ Iter m_end;
-		const Pred& m_pred;
+		Pred m_pred;
 		typedef selective_iterator_mixin<Pred, Iter, MixerIn> self;
 		typedef MixerIn super;
 		/* We don't have m_iter. The idea is that "*this", 
@@ -239,15 +239,15 @@ namespace srk31
 		typedef selective_iterator<Pred, Iter> self;
 		typedef selective_iterator_mixin<Pred, Iter, self> super;
 	public:
-		// no default constructor
-		using selective_iterator_mixin<Pred, Iter, selective_iterator<Pred, Iter> >::selective_iterator_mixin;
-		using selective_iterator_mixin<Pred, Iter, selective_iterator<Pred, Iter> >::operator++;
-		using selective_iterator_mixin<Pred, Iter, selective_iterator<Pred, Iter> >::operator--;
-		//using selective_iterator_mixin<Pred, Iter, selective_iterator<Pred, Iter> >::operator=;
-		using selective_iterator_mixin<Pred, Iter, selective_iterator<Pred, Iter> >::operator!=;
-		using selective_iterator_mixin<Pred, Iter, selective_iterator<Pred, Iter> >::operator==;
-		using selective_iterator_mixin<Pred, Iter, selective_iterator<Pred, Iter> >::operator*;
-		using selective_iterator_mixin<Pred, Iter, selective_iterator<Pred, Iter> >::operator->;
+		// no default constructor -- we rely on Iter being default-constructable
+		using super::selective_iterator_mixin;
+		using super::operator++;
+		using super::operator--;
+		//usine super::operator=;
+		using super::operator!=;
+		using super::operator==;
+		using super::operator*;
+		using super::operator->;
 		
 		//using Iter::reference;
 		typedef typename Iter::reference reference;
