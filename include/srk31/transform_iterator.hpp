@@ -55,12 +55,12 @@ namespace srk31
 		// assignment
 		self& operator=(const self& arg)
 		{
-			assert(&this->m_func == &arg.m_func);
+			this->m_func = arg.m_func;
 			return *this;
 		}
 		self& operator=(self&& arg) // move assignment
 		{
-			assert(&this->m_func == &arg.m_func);
+			this->m_func = std::move(arg.m_func);
 			return *this;
 		}
 

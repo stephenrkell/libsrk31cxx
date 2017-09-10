@@ -186,9 +186,9 @@ namespace srk31
 			//assert(arg.m_end == this->m_end);
 			this->m_begin = arg.m_begin;
 			this->m_end = arg.m_end;
-			assert(arg.m_pred == this->m_pred);
+			this->m_pred = arg.m_pred;
 			this->have_begin = arg.have_begin;
-			//iter() = arg.iter();
+			//iter() = arg.iter(); // the mixer-in takes care of this by using default operator=
 			print_range();
 			return *this;
 		}
@@ -198,10 +198,9 @@ namespace srk31
 			//assert(arg.m_end == this->m_end);
 			this->m_begin = std::move(arg.m_begin);
 			this->m_end = std::move(arg.m_end);
-			//this->m_pred = std::move(arg.m_pred);
-			assert(arg.m_pred == this->m_pred);
+			this->m_pred = std::move(arg.m_pred);
 			this->have_begin = std::move(arg.have_begin);
-			//iter() = std::move(arg.iter());
+			//iter() = std::move(arg.iter()); // the mixer-in takes care of this by using default operator=
 			print_range();
 			return *this;
 		}
