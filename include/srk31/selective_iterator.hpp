@@ -130,8 +130,8 @@ namespace srk31
 		{
 			//std::cerr << "Two-arg moving constructor called for " << this << std::endl;
 			iter() = m_begin;
-			while (static_cast<MixerIn&>(*this) != this->m_end
-				&& !this->m_pred(static_cast<MixerIn&>(*this)))
+			while (static_cast<Iter&>(iter()) != this->m_end
+				&& !this->m_pred(static_cast<Iter&>(iter())))
 			{
 				//std::cerr << "Advancing (2) over one element because pred says no" << std::endl;
 				++iter();
