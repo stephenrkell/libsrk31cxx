@@ -24,4 +24,7 @@ lib/libsrk31c++.so: $(lib_LTLIBRARIES)
 lib/libsrk31c++.so.0: $(lib_LTLIBRARIES)
 	mkdir -p lib && cd lib && ln -sf ../src/.libs/libsrk31c++.so.0 .
 
-all: lib/libsrk31c++.so lib/libsrk31c++.so.0
+lib/libsrk31c++.a: $(lib_LTLIBRARIES)
+	mkdir -p lib && cd lib && ln -sf ../src/.libs/libsrk31c++.a .
+
+all: lib/libsrk31c++.so lib/libsrk31c++.so.0 lib/libsrk31c++.a
