@@ -35,8 +35,12 @@ namespace srk31 {
 		int inc_level() { indent_level++; *this << '\t'; return indent_level; }
 		int dec_level() { indent_level--; *this << "\b\b\b\b\b\b\b\b"; return indent_level; }
 		int level() { return indent_level; }
+	};
+	/* support manipulators*/
+	inline indenting_tty_ostream& operator<<(indenting_tty_ostream& l,
+		std::function<indenting_tty_ostream&(indenting_tty_ostream&)> m)
+	{ m(l); return l; }
 
-	}; 
 	extern indenting_tty_ostream indenting_tty_cout, indenting_tty_cerr;
 
 	// this doesn't assume a tty, but outputs an extra newlines on dec_level()
@@ -52,9 +56,11 @@ namespace srk31 {
 		int inc_level() { indent_level++; *this << "\n"; return indent_level; }
 		int dec_level() { indent_level--; *this << "\n"; return indent_level; }
 		int level() { return indent_level; }
-
 	}; 
-	extern indenting_newline_ostream indenting_newline_cout, indenting_newline_cerr;
+	/* support manipulators*/
+	inline indenting_newline_ostream& operator<<(indenting_newline_ostream& l,
+		std::function<indenting_newline_ostream&(indenting_newline_ostream&)> m)
+	{ m(l); return l; }
     
     // this one guesses using isatty
     class indenting_ostream : public std::ostream
@@ -73,6 +79,11 @@ namespace srk31 {
             return indent_level; }
 		int level() { return indent_level; }
     };
+	/* support manipulators*/
+	inline indenting_ostream& operator<<(indenting_ostream& l,
+		std::function<indenting_ostream&(indenting_ostream&)> m)
+	{ m(l); return l; }
+
 
 	extern indenting_ostream indenting_cout;
     extern indenting_ostream indenting_cerr;
