@@ -36,9 +36,11 @@ inline bool is_power_of_two(unsigned i)
 }
 
 // C++ predicate that is always true
-template <typename T> struct True : std::unary_function<T, bool>
+template <typename Arg> struct True 
 {
-        bool operator()(const T& arg) const { return true; }
+		typedef Arg argument_type;
+		typedef bool result_type;
+        bool operator()(const Arg& arg) const { return true; }
 };
 
 // function that counts the length of a sequence
