@@ -194,7 +194,7 @@ struct ffi_closure_s
 			/* ffi_abi abi */ FFI_DEFAULT_ABI,
 			/*unsigned int nargs */ p_atypes->size(),
 			/* ffi_type *rtype */ ffi_type_s<RetType>::t(),
-			/* ffi_type **atypes */ &(*p_atypes)[0]
+			/* ffi_type **atypes */ p_atypes->empty() ? nullptr : &(*p_atypes)[0]
 		);
 		if (status != FFI_OK) throw 1; // FIXME: better thing to throw (or return null?)
 		status = ffi_prep_closure(closure, &*p_cif, &the_fun<member_fun>, obj);
